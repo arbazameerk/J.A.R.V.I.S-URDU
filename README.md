@@ -154,7 +154,7 @@ Some of the major user-environments can be:
 
 **2.6.4.2 Developers of the Project**
 
-| Representatives           | Mr. Arbaz Ameer                                                      |
+| Representatives           | Mr. Arbaz Ameer, Mr. Anus Abdullah, Mr. Zohaib Aamer                |
 |---------------------------|---------------------------------------------------------------------|
 | Description               | They are involved in designing the system.                          |
 | Type                      | They are technical stakeholders.                                     |
@@ -164,8 +164,8 @@ Some of the major user-environments can be:
 | Success Criteria          | The completion of features which are being committed by the development team at the start of the project. |
 | Involvement               | 1. Designers                                                          |
 |                           | 2. Testers                                                            |
-|                           | (^) 2. Data acquisition                                              |
-|                           | 3. System Training                                                   |
+|                           | 3. Data acquisition                                              |
+|                           | 4. System Training                                                   |
 | Comments/Issues           | None                                                                  |
 
 ## 3. System Requirement Specification
