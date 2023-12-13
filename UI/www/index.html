@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Metadata for character set and viewport -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Page title and favicon -->
+    <title>Jarvis</title>
+    <link rel="shortcut icon" href="assets/img/logo copy.ico" type="image/x-icon">
+    <!-- jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Bootstrap Tooltip CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Tooltip JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Particle.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"
+        type="text/javascript"></script>
+
+    <!-- Custom CSS file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Oval section with canvas and JarvisHood -->
+        <section id="Oval" class="mb-4">
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
+                        <!-- Canvas for particle animation -->
+                        <canvas id="canvasOne" width="700" height="420" style="position: absolute;"></canvas>
+
+                        <!-- JarvisHood with a square and three circles -->
+                        <div id="JarvisHood">
+                            <div class="square">
+                                <span class="circle"></span>
+                                <span class="circle"></span>
+                                <span class="circle"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Greeting text and Mic button -->
+                    <h5 class="text-light text text-center">ہیلو، میں آپ کی کس طرح مدد کر سکتا ہوں؟</h5>
+                    <div class="col-md-12 mt-4 pt-4">
+                        <div id="TextInput" class="d-flex">
+                            <button id="MicBtn" class="glow-on-hover" style="margin: 0 auto;"><i class="bi bi-mic"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Information, Feedback, Date, and Weather buttons -->
+            <div id="infoButton" class="info-button">
+                <button data-toggle="tooltip" data-placement="top" title="معلومات" onclick="showInformation()">
+                    <i class="bi bi-info-circle"></i>
+                </button>
+            </div>
+
+            <div id="feedbackButton" class="feedback-button">
+                <button data-toggle="tooltip" data-placement="top" title="فیڈبیک" onclick="showFeedback()">
+                    <i class="bi bi-chat-dots"></i>
+                </button>
+            </div>
+
+            <div class="top-right">
+                <!-- Date and time display -->
+                <span id="currentDate"></span>
+                <br>
+                <span id="currentTime"></span>
+            </div>
+
+            <div class="top-left">
+                <!-- Weather display -->
+                <span id="currentWeather"></span>
+            </div>
+        </section>
+
+        <!-- SiriWave section -->
+        <section id="SiriWave" class="mb-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                            <div>
+                                <!-- SiriWave greeting and buttons -->
+                                <h5 class="text-light text text-center">ہیلو، میں جاروس ہوں!</h5>
+                                <br><br>
+                                <div class="d-flex justify-content-center mb-3">
+                                    <!-- Wi-Fi, Volume, and Bluetooth buttons -->
+                                    <button style="background-color: #EF7500; border: 1px solid black;" data-toggle="tooltip" data-placement="top" title="وائی فائی چالو" class="btn btn-primary mx-2">
+                                        <i class="bi bi-wifi" style="font-size: 24px; color: white;"></i>
+                                    </button>
+
+                                    <button style="background-color: #EF7500; border: 1px solid black;" data-toggle="tooltip" data-placement="top" title="آواز بڑھائیں" class="btn btn-success mx-2">
+                                        <i class="bi bi-volume-up" style="font-size: 24px; color: white;"></i>
+                                    </button>
+
+                                    <button style="background-color: #EF7500; border: 1px solid black;" data-toggle="tooltip" data-placement="top" title="لوٹوتھ آن کریں" class="btn btn-info mx-2">
+                                        <i class="bi bi-bluetooth" style="font-size: 24px; color: white;"></i>
+                                    </button>
+                                </div>
+                                <!-- SiriWave container and Mic cancel button -->
+                                <div id="siri-container"></div>
+                                <div id="TextInput" class="d-flex">
+                                    <button data-toggle="tooltip" data-placement="top" title="سننا بند کرو" id="cancelButton" class="btn btn-danger mx-auto">
+                                        <i class="bi bi-mic-mute"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Script references -->
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+        <script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js'></script>
+        <script src="script.js"></script>
+        <script src="https://unpkg.com/siriwave/dist/siriwave.umd.min.js"></script>
+        <script src="assets/vendore/texllate/jquery.fittext.js"></script>
+        <script src="assets/vendore/texllate/jquery.lettering.js"></script>
+        <script src="http://jschr.github.io/textillate/jquery.textillate.js"></script>
+        <script src="main.js"></script>
+        <script src="controller.js"></script>
+        <script src="/eel.js"></script>
+    </div>
+</body>
+
+</html>
