@@ -28,11 +28,11 @@ import os
 import random
 import string
 from datetime import datetime
+import threading
+import queue
 #pip install xgboost -- for job lib
-global count 
 
-def getC(a):
-    count = a
+ 
 
 #commands 
 commands = {
@@ -65,6 +65,7 @@ def print_command_text(query):
     command_text = commands.get(query)
     if command_text:
         print("Command text:", command_text)
+        eel.senderText(command_text)  # Send command text to JavaScript
     else:
         print("Command not found for query:", query)
 
@@ -172,7 +173,7 @@ def record_audio():
     with sr.Microphone() as source:
         print('Listening....')
         r.adjust_for_ambient_noise(source)
-        audio_data = r.listen(source, timeout=None, phrase_time_limit= 2)
+        audio_data = r.listen(source, timeout=1, phrase_time_limit=1)
 
     # Generate a random file name for the WAV file
     file_name = generate_random_name() + ".wav"
@@ -193,37 +194,80 @@ def record_audio():
 
     return file_path
 
-
 movie_path = r"A:\Seasons\SpongeBob SquarePants (1999)\SpongeBob SquarePants Season 1 (1999-2000)\101 Help Wanted.avi"
 next_movie_path = r"A:\Seasons\SpongeBob SquarePants (1999)\SpongeBob SquarePants Season 1 (1999-2000)\102 Reef Blower.avi"
+
+def extract_features2(audio_data):
+    test = FE.compute_features(audio_data)
+    data_processor = FE.Data_Preprocessing(test)
+    features = data_processor.preprocessing()
+    return features
+
+
+def extract_features(audio_data, result_queue):
+    test = FE.compute_features(audio_data)
+    data_processor = FE.Data_Preprocessing(test)
+    x = data_processor.preprocessing()
+    result_queue.put(x)
+    return x
+
+def predict_command(x, result_queue):
+    loaded_model = FE.load('ensemble_model.joblib')
+    predictions = loaded_model.predict(x)
+    result_queue.put(predictions)
+
+def append_to_csv(command_info, csv_file = "Future_Train.csv" ):
+    if not os.path.isfile(csv_file):
+        df = pd.DataFrame(columns=[
+            "command_executed", "_record_source", "chroma_stft", "chroma_cqt", "chroma_cens",
+            "melspectrogram", "mfccs", "rms", "spectral_centroid", "spectral_bandwidth",
+            "spectral_contrast", "spectral_flatness", "spectral_rolloff", "poly_features",
+            "zero_crossing_rate", "harmonic_centroid", "harmonic_tonnetz", "harmonic_rms",
+            "harmonic_spectral_flatness", "harmonic_spectral_contrast", "harmonic_spectral_rolloff",
+            "harmonic_zero_crossing_rate"
+        ])
+    else:
+        df = pd.read_csv(csv_file)
+
+    df = pd.concat([df, pd.DataFrame(command_info, index=[0])], ignore_index=True)
+    df.to_csv(csv_file, index=False)
+
+
 @eel.expose
 def allCommands(message=22):
     if message == 22:
-        
         print('Recording audio...')
         eel.DisplayMessage('Recording audio...')
         # Code to record audio goes here
- 
-        #audio_data = "Control Pannel.wav" 
-        #audio_data = "Create New Folder.wav" 
-        #audio_data = "Play Movie.wav" 
-        #audio_data = "Turn off wifi.wav" 
-        #audio_data = "Turn on Wifi.wav" 
+        
+        # Record audio data
+        audio_data = record_audio()
+        scaled_features = FE.compute_features(audio_data)
 
-        #record_audio()
-        audio_data = record_audio() 
-        test = FE.compute_features(audio_data)
-        data_processor = FE.Data_Preprocessing(test)
-        x=data_processor.preprocessing()
-        x
+        # Create a queue for sharing results
+        feature_extraction_queue = queue.Queue()
+        prediction_queue = queue.Queue()
 
-        # Load the saved ensemble model from disk
-        loaded_model = FE.load('ensemble_model.joblib')
-        predictions = loaded_model.predict(x)
-        print(predictions)
+        # Start feature extraction in a separate thread
+        feature_extraction_thread = threading.Thread(target=extract_features, args=(audio_data, feature_extraction_queue))
+        feature_extraction_thread.start()
+
+        # Wait for feature extraction to complete
+        feature_extraction_thread.join()
+        x = feature_extraction_queue.get()
+
+        # Start prediction in a separate thread
+        prediction_thread = threading.Thread(target=predict_command, args=(x, prediction_queue))
+        prediction_thread.start()
+
+        # Wait for prediction to complete
+        prediction_thread.join()
+        query = prediction_queue.get()
+
+
 
         # Process the audio command
-        query = predictions
+        #query = predictions
         """ 0: "assistance_off",
     1: "assistance_on",
     2: "create_new_folder",
@@ -245,13 +289,40 @@ def allCommands(message=22):
     18: "volume_up",
     19: "zoom_in",
     20: "zoom_out" """
-        query = predictions
+        #query = predictions
         print_command_text(query)
+        
+        #saving the data for further training
+        command_info = {
+        "command_executed": query,
+        "_record_source": audio_data,
+        "chroma_stft": scaled_features[0],
+        "chroma_cqt": scaled_features[1],
+        "chroma_cens": scaled_features[2],
+        "melspectrogram": scaled_features[3],
+        "mfccs": scaled_features[4],
+        "rms": scaled_features[5],
+        "spectral_centroid": scaled_features[6],
+        "spectral_bandwidth": scaled_features[7],
+        "spectral_contrast": scaled_features[8],
+        "spectral_flatness": scaled_features[9],
+        "spectral_rolloff": scaled_features[10],
+        "poly_features": scaled_features[11],
+        "zero_crossing_rate": scaled_features[12],
+        "harmonic_centroid": scaled_features[13],
+        "harmonic_tonnetz": scaled_features[14],
+        "harmonic_rms": scaled_features[15],
+        "harmonic_spectral_flatness": scaled_features[16],
+        "harmonic_spectral_contrast": scaled_features[17],
+        "harmonic_spectral_rolloff": scaled_features[18],
+        "harmonic_zero_crossing_rate": scaled_features[19]}
+        #print (command_info)
+        append_to_csv(command_info)
         #eel.senderText(query)
     else:
         query = message
         eel.senderText(query)
-
+    
     try:
         if 1 in query:
             subprocess.Popen(["C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"])
@@ -294,7 +365,7 @@ def allCommands(message=22):
             media = instance.media_new(next_movie_path)
             player.set_media(media)
             player.play()
-            time.sleep(600)
+            time.sleep(10)
             player.stop()
         elif 11 in query:
             player.stop()

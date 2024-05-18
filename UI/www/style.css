@@ -4,6 +4,16 @@ body{
     overflow-y: hidden;
     overflow-x: hidden;
 }
+.dialog-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 9999;
+}
 
 .top-right {
   position: absolute;

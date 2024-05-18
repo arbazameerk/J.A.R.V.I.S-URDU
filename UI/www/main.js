@@ -18,6 +18,23 @@ $(document).ready(function () {
         autostart: true
     });
 
+    function updateCommandDisplay(command) {
+        // Create a new dialog box element
+        const dialogBox = document.createElement('div');
+        dialogBox.classList.add('dialog-box', 'text-light', 'text-center');
+        dialogBox.textContent = `Executed command: ${command}`;
+    
+        // Append the dialog box to the body
+        document.body.appendChild(dialogBox);
+    
+        // Show the dialog box for 3 seconds (3000 milliseconds)
+        setTimeout(() => {
+            dialogBox.remove();
+        }, 3000);
+    }
+    
+    // Expose the updateCommandDisplay function to Python
+    eel.expose(updateCommandDisplay, 'senderText');
     // Enable Bootstrap tooltips for elements with 'data-toggle="tooltip"'
     $('[data-toggle="tooltip"]').tooltip();
 

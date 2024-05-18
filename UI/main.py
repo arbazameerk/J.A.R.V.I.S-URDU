@@ -1,13 +1,11 @@
 import os
 import eel
 from engine.features import *
-import command as ca
+import command
 
 eel.init("www")
 
 #playAssistantSound()
-
-ca.getC(0)
 
 # Use the 'start-maximized' option to open the app in maximized mode
 # Use the 'start' command to specify the window position
